@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import CheckBox from '@react-native-community/checkbox';
+import React, { useState, useEffect } from "react";
+import CheckBox from "@react-native-community/checkbox";
 import {
   View,
   Text,
@@ -7,29 +7,29 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addTask,
   toggleTask,
   deleteTask,
   setFilter,
   editTask,
-} from '../actions/todoActions';
-import {Task, Filter} from '../types';
+} from "../actions/todoActions";
+import { Task, Filter } from "../types";
 import {
   loadTasksFromStorage,
   saveTaskToStorage,
   deleteTaskFromStorage,
-} from '../helpers/asyncStorageUtils';
+} from "../helpers/asyncStorageUtils";
 
 const TodoList: React.FC = () => {
-  const [taskText, setTaskText] = useState('');
+  const [taskText, setTaskText] = useState("");
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
-  const [editText, setEditText] = useState('');
+  const [editText, setEditText] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
   const dispatch = useDispatch();
-  const {filter, tasks} = useSelector((state: any) => state.todo);
+  const { filter, tasks } = useSelector((state: any) => state.todo);
 
   useEffect(() => {
     loadTasks();
@@ -41,28 +41,28 @@ const TodoList: React.FC = () => {
 
   const loadTasks = async () => {
     const savedTasks = await loadTasksFromStorage();
-    savedTasks.forEach(task => {
+    savedTasks.forEach((task) => {
       dispatch(addTask(task));
     });
   };
 
   const handleToggleCheckBoxChange = () => {
     if (toggleCheckBox) {
-      handleFilterChange('uncompleted');
+      handleFilterChange("uncompleted");
     } else {
-      handleFilterChange('all');
+      handleFilterChange("all");
     }
   };
 
   const handleAddTask = async () => {
-    if (taskText.trim() !== '') {
+    if (taskText.trim() !== "") {
       const newTask = {
         id: Math.random().toString(),
         text: taskText,
         completed: false,
       };
       dispatch(addTask(newTask));
-      setTaskText('');
+      setTaskText("");
       saveUpdatedTasks([...tasks, newTask]);
     }
   };
@@ -70,9 +70,9 @@ const TodoList: React.FC = () => {
   const handleToggleTask = async (id: string) => {
     dispatch(toggleTask(id));
     saveUpdatedTasks(
-      tasks.map(task =>
-        task.id === id ? {...task, completed: !task.completed} : task,
-      ),
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
     );
   };
 
@@ -86,8 +86,8 @@ const TodoList: React.FC = () => {
   };
 
   const handleEditTask = async () => {
-    if (editText.trim() !== '') {
-      const updatedTasks = tasks.map(task => {
+    if (editText.trim() !== "") {
+      const updatedTasks = tasks.map((task) => {
         if (task.id === editId) {
           return {
             ...task,
@@ -103,11 +103,11 @@ const TodoList: React.FC = () => {
         editTask({
           id: editId!,
           text: editText,
-          completed: tasks.find(task => task.id === editId)!.completed,
-        }),
+          completed: tasks.find((task) => task.id === editId)!.completed,
+        })
       );
       setEditId(null);
-      setEditText('');
+      setEditText("");
     }
   };
 
@@ -115,16 +115,17 @@ const TodoList: React.FC = () => {
     saveTaskToStorage(updatedTasks);
   };
 
-  const renderTaskItem = ({item}: {item: Task}) => (
+  const renderTaskItem = ({ item }: { item: Task }) => (
     <TouchableOpacity
       onPress={() => handleToggleTask(item.id)}
-      onLongPress={() => handleDeleteTask(item.id)}>
+      onLongPress={() => handleDeleteTask(item.id)}
+    >
       <View style={styles.taskContainer}>
         {editId === item.id ? (
           <TextInput
             style={[
               styles.taskText,
-              {textDecorationLine: item.completed ? 'line-through' : 'none'},
+              { textDecorationLine: item.completed ? "line-through" : "none" },
             ]}
             value={editText}
             onChangeText={setEditText}
@@ -137,8 +138,9 @@ const TodoList: React.FC = () => {
           <Text
             style={[
               styles.taskText,
-              {textDecorationLine: item.completed ? 'line-through' : 'none'},
-            ]}>
+              { textDecorationLine: item.completed ? "line-through" : "none" },
+            ]}
+          >
             {item.text}
           </Text>
         )}
@@ -147,17 +149,18 @@ const TodoList: React.FC = () => {
             setEditId(item.id);
             setEditText(item.text);
           }}
-          style={styles.buttonEdit}>
+          style={styles.buttonEdit}
+        >
           <Text style={styles.buttonText}>Изменить</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'uncompleted') {
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "uncompleted") {
       return !task.completed;
-    } else if (filter === 'all') {
+    } else if (filter === "all") {
       return task;
     }
     return true;
@@ -182,15 +185,15 @@ const TodoList: React.FC = () => {
           value={toggleCheckBox}
           onValueChange={setToggleCheckBox}
         />
-        <Text style={{fontSize: 18, color: 'black'}}>
-          Только не выполненные
+        <Text style={{ fontSize: 18, color: "black" }}>
+          Невыполненные задачи
         </Text>
       </View>
 
       <FlatList
         data={filteredTasks}
         renderItem={renderTaskItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
       />
     </View>
   );
@@ -199,43 +202,43 @@ const TodoList: React.FC = () => {
 export default TodoList;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16},
-  input: {borderWidth: 1, borderColor: 'black', padding: 10},
+  container: { flex: 1, padding: 16 },
+  input: { borderWidth: 1, borderColor: "black", padding: 10 },
   taskContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: 'grey',
+    borderBottomColor: "grey",
     paddingVertical: 5,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   checkBox: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     marginBottom: 20,
-    color: 'black',
+    color: "black",
   },
   taskText: {
-    textDecorationLine: 'none',
+    textDecorationLine: "none",
     marginLeft: 10,
     fontSize: 16,
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
     height: 40,
-    textAlignVertical: 'center',
+    textAlignVertical: "center",
   },
   button: {
-    backgroundColor: 'black',
+    backgroundColor: "black",
     borderRadius: 5,
     padding: 10,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   buttonEdit: {
-    backgroundColor: 'grey',
+    backgroundColor: "grey",
     borderRadius: 5,
     padding: 5,
   },
